@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import path from "path"; // Перенеси сюда
 import { fileURLToPath } from "url"; // Перенеси сюда
 import { initDb, User, Role, Book, Comment, Quote, SiteContent } from "./models/index.js";
