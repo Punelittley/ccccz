@@ -3,7 +3,12 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import path from "path"; // Перенеси сюда
+import { fileURLToPath } from "url"; // Перенеси сюда
 import { initDb, User, Role, Book, Comment, Quote, SiteContent } from "./models/index.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -364,6 +369,18 @@ app.delete("/api/quotes/:id", authMiddleware, async (req: Request & { user?: Jwt
   await quote.destroy();
   res.json({ success: true });
 });
+
+app.use(express.static(path.join(__dirname, "../../dist")));
+
+app.get("*", (req, res) => {
+  // Если это запрос к API, который не был найден выше - отдаем 404 JSON, а не HTML
+  if (req.originalUrl.startsWith('/api')) {
+      return res.status(404).json({ success: false, error: "API route not found" });
+  }
+  // Для всего остального отдаем фронтенд
+  res.sendFile(path.join(__dirname, "../../dist", "index.html"));
+});
+
 
 initDb().then(() => {
   app.listen(PORT, () => {
